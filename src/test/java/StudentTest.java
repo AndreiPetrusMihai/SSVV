@@ -15,33 +15,14 @@ import java.util.List;
 
 public class StudentTest {
 
-    void cleanFiles(){
-        String filenameStudent = "fisiere/emptyStudent.xml";
-        String filenameTema = "fisiere/emptyTema.xml";
-        String filenameNota = "fisiere/emptyNota.xml";
-        File fileStudent = new File(filenameStudent);
-        File fileTema = new File(filenameTema);
-        File fileNota = new File(filenameNota);
-        fileStudent.delete();
-        fileTema.delete();
-        fileNota.delete();
-    }
-
     Service createService(){
         StudentValidator studentValidator = new StudentValidator();
         TemaValidator temaValidator = new TemaValidator();
 
 
-        String filenameStudent = "fisiere/emptyStudent.xml";
-        String filenameTema = "fisiere/emptyTema.xml";
-        String filenameNota = "fisiere/emptyNota.xml";
-        try{
-            new File(filenameStudent).createNewFile();
-            new File(filenameTema).createNewFile();
-            new File(filenameNota).createNewFile();
-        }catch (IOException e){
-
-        }
+        String filenameStudent = "fisiere/StudentiTest.xml";
+        String filenameTema = "fisiere/TemeTest.xml";
+        String filenameNota = "fisiere/NoteTest.xml";
 
         //StudentFileRepository studentFileRepository = new StudentFileRepository(filenameStudent);
         //TemaFileRepository temaFileRepository = new TemaFileRepository(filenameTema);
@@ -59,14 +40,31 @@ public class StudentTest {
     @Test
     public void addStudent_addingValidStudentWithGroup936_shouldAdd () {
         Service testService = createService();
-        Student validStudent = new Student("100","Andrei",936,"andrei@gmail.com");
+
+
+        Integer biggestId = 0;
+        for(Student student : testService.getAllStudenti()){
+            int id = Integer.parseInt(student.getID());
+            if( id > biggestId){
+                biggestId = id;
+            }
+        }
+        int nextId = biggestId + 1;
+        Student validStudent = new Student(((Integer)nextId).toString(),"Andrei",936,"andrei@gmail.com");
         testService.addStudent(validStudent);
-        List<Student> students = new ArrayList();
-        testService.getAllStudenti().forEach(students::add);
-        Student addedStudent = students.get(0);
+
+        Student addedStudent = null;
+        for(Student student : testService.getAllStudenti()){
+            int id = Integer.parseInt(student.getID());
+            if( id == nextId){
+                addedStudent = student;
+            }
+        }
+        if (addedStudent == null){
+            assert false;
+        }
         assert addedStudent.getNume() == "Andrei";
         assert addedStudent.getGrupa() == 936;
-        cleanFiles();
     }
 
     @Test
@@ -78,7 +76,6 @@ public class StudentTest {
             assert false;
         } catch(Exception e){
         }
-        cleanFiles();
     }
 
 }
