@@ -1,5 +1,5 @@
 # Default ignored files
-./pass.txt
+pass.txt
 /shelf/
 /workspace.xml
 # Datasource local storage ignored files
