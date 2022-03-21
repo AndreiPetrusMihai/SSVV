@@ -9,6 +9,7 @@ import service.Service;
 import validation.NotaValidator;
 import validation.StudentValidator;
 import validation.TemaValidator;
+import validation.ValidationException;
 
 public class AddStudent {
 
@@ -21,11 +22,6 @@ public class AddStudent {
         String filenameTema = "fisiere/TemeTest.xml";
         String filenameNota = "fisiere/NoteTest.xml";
 
-        //StudentFileRepository studentFileRepository = new StudentFileRepository(filenameStudent);
-        //TemaFileRepository temaFileRepository = new TemaFileRepository(filenameTema);
-        //NotaValidator notaValidator = new NotaValidator(studentFileRepository, temaFileRepository);
-        //NotaFileRepository notaFileRepository = new NotaFileRepository(filenameNota);
-
         StudentXMLRepo studentXMLRepository = new StudentXMLRepo(filenameStudent);
         TemaXMLRepo temaXMLRepository = new TemaXMLRepo(filenameTema);
         NotaValidator notaValidator = new NotaValidator(studentXMLRepository, temaXMLRepository);
@@ -34,45 +30,149 @@ public class AddStudent {
         return service;
     }
 
-    @Test
-    public void addStudent_addingValidStudentWithGroup936_shouldAdd () {
-        Service testService = createService();
-
-
+    public String getNextId(Service service){
         Integer biggestId = 0;
-        for(Student student : testService.getAllStudenti()){
+        for(Student student : service.getAllStudenti()){
             int id = Integer.parseInt(student.getID());
             if( id > biggestId){
                 biggestId = id;
             }
         }
-        int nextId = biggestId + 1;
-        Student validStudent = new Student(((Integer)nextId).toString(),"Andrei",936,"andrei@gmail.com");
+        return ((Integer)(biggestId + 1)).toString();
+    }
+
+    @Test
+    public void addStudent_addingValidStudentWithGroupMinus1_shouldThrowValidationError () {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Student validStudent = new Student(nextId,"Andrei",-1,"andrei@gmail.com");
+        try{
+            testService.addStudent(validStudent);
+            assert false;
+        } catch(ValidationException e){
+        } catch(Exception e2) {
+            assert false;
+        }
+    }
+
+    @Test
+    public void addStudent_addingValidStudentWithGroup0_shouldAdd () {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Student validStudent = new Student(nextId,"Andrei",0,"andrei@gmail.com");
         testService.addStudent(validStudent);
 
         Student addedStudent = null;
         for(Student student : testService.getAllStudenti()){
-            int id = Integer.parseInt(student.getID());
-            if( id == nextId){
+            String id = student.getID();
+            if( id.equals(nextId)){
                 addedStudent = student;
             }
         }
-        if (addedStudent == null){
-            assert false;
-        }
-        assert addedStudent.getNume() == "Andrei";
-        assert addedStudent.getGrupa() == 936;
+
+        assert addedStudent != null;
+        assert addedStudent.getGrupa() == 0;
     }
 
     @Test
-    public void addStudent_addingValidStudentWithNegativeGroup_shouldThrowError () {
+    public void addStudent_addingValidStudentWithGroup1_shouldAdd () {
         Service testService = createService();
-        Student validStudent = new Student("100","Andrei",-5,"andrei@gmail.com");
+        String nextId = getNextId(testService);
+        Student validStudent = new Student(nextId,"Andrei",1,"andrei@gmail.com");
+        testService.addStudent(validStudent);
+
+        Student addedStudent = null;
+        for(Student student : testService.getAllStudenti()){
+            String id = student.getID();
+            if( id.equals(nextId)){
+                addedStudent = student;
+            }
+        }
+
+        assert addedStudent != null;
+        assert addedStudent.getGrupa() == 1;
+    }
+
+    @Test
+    public void addStudent_addingValidStudentWithGroupMaxIntMinusOne_shouldAdd () {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Student validStudent = new Student(nextId,"Andrei",Integer.MAX_VALUE-1,"andrei@gmail.com");
+        testService.addStudent(validStudent);
+
+        Student addedStudent = null;
+        for(Student student : testService.getAllStudenti()){
+            String id = student.getID();
+            if( id.equals(nextId)){
+                addedStudent = student;
+            }
+        }
+
+        assert addedStudent != null;
+        assert addedStudent.getGrupa() == Integer.MAX_VALUE-1;
+    }
+
+    @Test
+    public void addStudent_addingValidStudentWithGroupMaxInt_shouldAdd () {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Student validStudent = new Student(nextId,"Andrei",Integer.MAX_VALUE,"andrei@gmail.com");
+        testService.addStudent(validStudent);
+
+        Student addedStudent = null;
+        for(Student student : testService.getAllStudenti()){
+            String id = student.getID();
+            if( id.equals(nextId)){
+                addedStudent = student;
+            }
+        }
+
+        assert addedStudent != null;
+        assert addedStudent.getGrupa() == Integer.MAX_VALUE;
+    }
+
+    @Test
+    public void addStudent_addingValidStudentWithNonEmptyStringId_shouldAdd () {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Student validStudent = new Student(nextId,"Andrei",123,"andrei@gmail.com");
+        testService.addStudent(validStudent);
+
+        Student addedStudent = null;
+        for(Student student : testService.getAllStudenti()){
+            String id = student.getID();
+            if( id.equals(nextId)){
+                addedStudent = student;
+            }
+        }
+
+        assert addedStudent != null;
+    }
+
+    @Test
+    public void addStudent_addingValidStudentWithIdNull_shouldThrowValidationError () {
+        Service testService = createService();
+        Student validStudent = new Student(null,"Andrei",-1,"andrei@gmail.com");
         try{
             testService.addStudent(validStudent);
             assert false;
-        } catch(Exception e){
+        } catch(ValidationException e){
+        } catch(Exception e2) {
+            assert false;
         }
     }
 
+    //This is test case number 9 from Req_EC_BVA_all_TC
+    @Test
+    public void addStudent_addingValidStudentWithIdEmptyString_shouldThrowValidationError () {
+        Service testService = createService();
+        Student validStudent = new Student("","Andrei",-1,"andrei@gmail.com");
+        try{
+            testService.addStudent(validStudent);
+            assert false;
+        } catch(ValidationException e){
+        } catch(Exception e2) {
+            assert false;
+        }
+    }
 }
