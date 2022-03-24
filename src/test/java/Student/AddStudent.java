@@ -273,7 +273,7 @@ public class AddStudent {
     public void addStudent_addingInvalidStudentWithEmailEmptyString_shouldThrowValidationException(){
         Service testService = createService();
         String nextId = getNextId(testService);
-        Student validStudent = new Student(nextId,"",10,"");
+        Student validStudent = new Student(nextId,"Andrei",10,"");
 
         try {
             testService.addStudent(validStudent);
