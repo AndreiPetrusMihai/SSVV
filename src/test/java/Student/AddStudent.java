@@ -11,6 +11,8 @@ import validation.StudentValidator;
 import validation.TemaValidator;
 import validation.ValidationException;
 
+import java.util.Objects;
+
 public class AddStudent {
 
     Service createService(){
@@ -172,6 +174,112 @@ public class AddStudent {
             assert false;
         } catch(ValidationException e){
         } catch(Exception e2) {
+            assert false;
+        }
+    }
+
+    @Test
+    public void addStudent_addingValidStudentWithNameNonEmptyString_shouldAdd(){
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Student validStudent = new Student(nextId,"Andrei",10,"andrei@gmail.com");
+
+        try {
+            testService.addStudent(validStudent);
+        }catch (Exception e){
+            assert false;
+        }
+        Student addedStudent = null;
+        for(Student student : testService.getAllStudenti()){
+            String id = student.getID();
+            if( id.equals(nextId)){
+                addedStudent = student;
+            }
+        }
+
+        assert addedStudent != null;
+        assert Objects.equals(addedStudent.getNume(), "Andrei");
+    }
+
+    @Test
+    public void addStudent_addingInvalidStudentWithNullName_shouldThrowValidationException(){
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Student validStudent = new Student(nextId,null,10,"andrei@gmail.com");
+
+        try {
+            testService.addStudent(validStudent);
+            assert false;
+        }catch (ValidationException ignored){
+        }catch (Exception e){
+            assert false;
+        }
+    }
+
+    @Test
+    public void addStudent_addingInvalidStudentWithNameEmptyString_shouldThrowValidationException(){
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Student validStudent = new Student(nextId,"",10,"andrei@gmail.com");
+
+        try {
+            testService.addStudent(validStudent);
+            assert false;
+        }catch (ValidationException ignored){
+        }catch (Exception e){
+            assert false;
+        }
+    }
+
+    @Test
+    public void addStudent_addingValidStudentWithEmailNonEmptyString_shouldAdd(){
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Student validStudent = new Student(nextId,"Andrei",11,"andrei@gmail.com");
+
+        try {
+            testService.addStudent(validStudent);
+        }catch (Exception e){
+            assert false;
+        }
+        Student addedStudent = null;
+        for(Student student : testService.getAllStudenti()){
+            String id = student.getID();
+            if( id.equals(nextId)){
+                addedStudent = student;
+            }
+        }
+
+        assert addedStudent != null;
+        assert Objects.equals(addedStudent.getEmail(), "andrei@gmail.com");
+    }
+
+    @Test
+    public void addStudent_addingInvalidStudentWithEmailNull_shouldThrowValidationException(){
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Student validStudent = new Student(nextId,"Andrei",10,null);
+
+        try {
+            testService.addStudent(validStudent);
+            assert false;
+        }catch (ValidationException ignored){
+        }catch (Exception e){
+            assert false;
+        }
+    }
+
+    @Test
+    public void addStudent_addingInvalidStudentWithEmailEmptyString_shouldThrowValidationException(){
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Student validStudent = new Student(nextId,"",10,"");
+
+        try {
+            testService.addStudent(validStudent);
+            assert false;
+        }catch (ValidationException ignored){
+        }catch (Exception e){
             assert false;
         }
     }
