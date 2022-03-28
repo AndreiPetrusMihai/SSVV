@@ -85,6 +85,151 @@ public class AddAssignment {
             assert false;
         }
     }
+    @Test
+    public void addTema_addingInvalidTemaWithDescriereEmptyString_shouldThrowValidationError () {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Tema validTema = new Tema(nextId,"",9,6);
+        try{
+            testService.addTema(validTema);
+            assert false;
+        } catch(ValidationException e){
+        } catch(Exception e2) {
+            assert false;
+        }
+    }
 
+    @Test
+    public void addTema_addingValidTemaWithDescriptionTema1_shouldAdd () {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Tema validTema = new Tema(nextId,"Tema1",9,6);
+        testService.addTema(validTema);
+
+        Tema addedTema = null;
+        for(Tema tema : testService.getAllTeme()){
+            String id = tema.getID();
+            if( id.equals(nextId)){
+                addedTema = tema;
+            }
+        }
+
+        assert addedTema != null;
+        assert addedTema.getDescriere().equals("Tema1");
+    }
+
+    @Test
+    public void addTema_addingInvalidTemaWithDeadline0_shouldThrowValidationError () {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Tema validTema = new Tema(nextId,"Description",0,6);
+        try{
+            testService.addTema(validTema);
+            assert false;
+        } catch(ValidationException e){
+        } catch(Exception e2) {
+            assert false;
+        }
+    }
+
+    @Test
+    public void addTema_addingInvalidTemaWithDeadline15_shouldThrowValidationError () {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Tema validTema = new Tema(nextId,"Description",15,6);
+        try{
+            testService.addTema(validTema);
+            assert false;
+        } catch(ValidationException e){
+        } catch(Exception e2) {
+            assert false;
+        }
+    }
+
+
+    @Test
+    public void addTema_addingValidTemaWithDeadline7_shouldAdd () {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Tema validTema = new Tema(nextId,"Tema1",7,6);
+        testService.addTema(validTema);
+
+        Tema addedTema = null;
+        for(Tema tema : testService.getAllTeme()){
+            String id = tema.getID();
+            if( id.equals(nextId)){
+                addedTema = tema;
+            }
+        }
+
+        assert addedTema != null;
+        assert addedTema.getDeadline() == 7;
+    }
+
+    @Test
+    public void addTema_addingInvalidTemaWithPrimire0_shouldThrowValidationError () {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Tema validTema = new Tema(nextId,"Description",7,0);
+        try{
+            testService.addTema(validTema);
+            assert false;
+        } catch(ValidationException e){
+        } catch(Exception e2) {
+            assert false;
+        }
+    }
+
+    @Test
+    public void addTema_addingInvalidTemaWithPrimire15_shouldThrowValidationError () {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Tema validTema = new Tema(nextId,"Description",7,15);
+        try{
+            testService.addTema(validTema);
+            assert false;
+        } catch(ValidationException e){
+        } catch(Exception e2) {
+            assert false;
+        }
+    }
+
+    @Test
+    public void addTema_addingValidTemaWithPrimire7_shouldAdd () {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Tema validTema = new Tema(nextId,"Tema1",7,7);
+        testService.addTema(validTema);
+
+        Tema addedTema = null;
+        for(Tema tema : testService.getAllTeme()){
+            String id = tema.getID();
+            if( id.equals(nextId)){
+                addedTema = tema;
+            }
+        }
+
+        assert addedTema != null;
+        assert addedTema.getPrimire() == 7;
+    }
+
+    @Test
+    public void addTema_addingValidTemaTwoTimes_shouldAddOnlyOnce() {
+        Service testService = createService();
+        String nextId = getNextId(testService);
+        Tema validTema = new Tema(nextId,"Tema1",7,7);
+        testService.addTema(validTema);
+        testService.addTema(validTema);
+
+        int timesFound = 0;
+        for(Tema tema : testService.getAllTeme()){
+            String id = tema.getID();
+            if( id.equals(nextId)){
+                timesFound++;
+            }
+        }
+
+        assert timesFound == 1;
+    }
 
 }
