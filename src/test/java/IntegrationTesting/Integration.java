@@ -1,5 +1,6 @@
 package IntegrationTesting;
 
+import curent.Curent;
 import domain.Nota;
 import domain.Student;
 import domain.Tema;
@@ -14,7 +15,10 @@ import validation.TemaValidator;
 import validation.ValidationException;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Date;
+
+import static org.mockito.Mockito.*;
 
 public class Integration {
 
@@ -32,6 +36,28 @@ public class Integration {
         NotaValidator notaValidator = new NotaValidator(studentXMLRepository, temaXMLRepository);
         NotaXMLRepo notaXMLRepository = new NotaXMLRepo(filenameNota);
         Service service = new Service(studentXMLRepository, studentValidator, temaXMLRepository, temaValidator, notaXMLRepository, notaValidator);
+        return service;
+    }
+
+    private final Student validStudent = new Student("10", "Andrei", -1, "andrei@gmail.com");
+    private final Student invalidStudentWithIdNull = new Student(null, "Andrei", -1, "andrei@gmail.com");
+    private final Tema validTema = new Tema("15", "Descriere", Curent.getCurrentWeek() + 2, Curent.getCurrentWeek());
+    private final Nota validNota = new Nota("20", "10", "15", 10, LocalDate.now());
+    private final String feedback = "ok";
+
+    Service createMockService() {
+        Service service = mock(Service.class);
+        when(service.addStudent(validStudent)).thenReturn(null);
+        when(service.addStudent(invalidStudentWithIdNull)).thenThrow(new ValidationException("Invalid student"));
+
+        when(service.addTema(validTema)).thenReturn(null);
+
+        when(service.addNota(validNota, feedback)).thenReturn(null);
+
+        when(service.getAllTeme()).thenReturn(Collections.nCopies(1, validTema));
+        when(service.getAllStudenti()).thenReturn(Collections.nCopies(1, validStudent));
+        when(service.getAllNote()).thenReturn(Collections.nCopies(1, validNota));
+
         return service;
     }
 
@@ -127,7 +153,7 @@ public class Integration {
         Student validStudent = new Student(nextStudentId, "Andrei", 0, "andrei@gmail.com");
         testService.addStudent(validStudent);
 
-        Tema validTema = new Tema(nextAssignmentId, "Descriere", 13, 12);
+        Tema validTema = new Tema(nextAssignmentId, "Descriere", Curent.getCurrentWeek(), Curent.getCurrentWeek()-2);
         testService.addTema(validTema);
 
         Tema addedTema = null;
@@ -142,10 +168,61 @@ public class Integration {
 
         Nota validNota = new Nota(nextGradeId, nextStudentId, nextAssignmentId, 10, LocalDate.now());
         try {
-            Double notaValue = testService.addNota(validNota, "nice");
-            assert notaValue == null;
+            Nota notaValue = testService.addNota(validNota, "nice");
+            System.out.println(notaValue);
         } catch (Exception e) {
             assert false;
+        }
+    }
+
+
+    @Test
+    public void addStudent_validStudent_studentAdded() {
+        Service testService = createMockService();
+        Student responseStudent = testService.addStudent(validStudent);
+        assert responseStudent == null;
+        for (Student student : testService.getAllStudenti()) {
+            assert student.equals(validStudent);
+        }
+    }
+
+    @Test
+    public void addStudent_invalidStudent_ValidationExceptionThrown() {
+        Service testService = createService();
+        try {
+            testService.addStudent(invalidStudentWithIdNull);
+        } catch (ValidationException ignored) {
+        } catch (Exception e) {
+            assert false;
+        }
+    }
+
+    @Test
+    public void addStudentTema_validStudentTema_temaAdded() {
+        Service testService = createMockService();
+        Student responseStudent = testService.addStudent(validStudent);
+        Tema responseTema = testService.addTema(validTema);
+
+        assert responseTema == null;
+
+        for (Tema tema : testService.getAllTeme()) {
+            assert tema.equals(validTema);
+        }
+    }
+
+    @Test
+    public void addStudentTemaNota_validStudentTemaNota_notaAdded() {
+        Service testService = createMockService();
+        Student responseStudent = testService.addStudent(validStudent);
+        Tema responseTema = testService.addTema(validTema);
+        Nota responseNota = testService.addNota(validNota, feedback);
+
+        assert responseStudent == null;
+        assert responseTema == null;
+        assert responseNota == null;
+
+        for (Nota nota : testService.getAllNote()) {
+            assert nota.equals(validNota);
         }
     }
 }

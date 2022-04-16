@@ -4,3 +4,27 @@ Nota: 10.0
 Predata in saptamana: 13
 Deadline: 13
 Feedback: nice
+
+Tema: 62
+Nota: 7.5
+Predata in saptamana: 14
+Deadline: 13
+Feedback: nice
+
+Tema: 63
+Nota: 10.0
+Predata in saptamana: 14
+Deadline: 14
+Feedback: nice
+
+Tema: 64
+Nota: 10.0
+Predata in saptamana: 14
+Deadline: 14
+Feedback: nice
+
+Tema: 65
+Nota: 10.0
+Predata in saptamana: 14
+Deadline: 14
+Feedback: nice
